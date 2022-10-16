@@ -1,0 +1,56 @@
+import java.io.*;
+import java.net.*;
+class email{
+	private static void connect(String id){
+		// establish connection
+		try{		
+			URL url_net = new URL("https://www.southampton.ac.uk/people/" + id);
+			URLConnection url_connect = url_net.openConnection();
+			url_connect.connect();
+			BufferedReader b_url = new BufferedReader(new InputStreamReader(url_connect.getInputStream()));
+			String in_line = "";			
+			do {					
+				in_line = b_url.readLine();
+			}
+			while(!in_line.contains("og:title") && in_line != null);		
+			int pos1 = in_line.indexOf("content=") +9;
+			int pos2 = in_line.indexOf("/>") -2;
+			String name1 = in_line.substring(pos1, pos2);
+			if (name1.contains("Find a person")){
+				System.out.println("Person not found.");
+			}
+			else{
+				System.out.println(name1);
+			}
+			b_url.close();
+		}
+		catch(MalformedURLException e){
+			System.out.println("URL failed.");
+		}
+		catch(IOException e){
+			System.out.println("openconnention failed.");
+		}
+	}
+	// main program
+	public static void main(String[] args) throws Exception{
+		int check = 1;
+		// reading email id
+		InputStreamReader i = new InputStreamReader(System.in);
+		BufferedReader br = new BufferedReader(i);
+		while (check !=0){
+			
+			String email_ID = "";
+			System.out.print("Please enter your email ID: ");
+			email_ID = br.readLine();
+			connect(email_ID);
+			// checking if user want to end the searching process
+			System.out.print("Do you want to end searching (y for yes, any other key for no)? ");
+			String ans = br.readLine();
+			if (ans.contains("y")){
+				check = 0;
+			}	
+		}
+		br.close();
+		i.close();
+	}
+}
